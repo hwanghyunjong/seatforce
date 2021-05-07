@@ -1,40 +1,46 @@
 var express = require('express');
 var router = express.Router();
+var jsforce = require('jsforce');
 var dateFormat = require('dateformat');
+var fs = require('fs');
+var path = require('path');
 
-const jsforce = require("jsforce");const conn = new jsforce.Connection({
-    // you can change loginUrl to connect to sandbox or prerelease env.
-    // loginUrl : "https://test.salesforce.com"
+let conn = new jsforce.Connection({
     loginUrl : "https://resilient-raccoon-pg4msf-dev-ed.my.salesforce.com"
-  });
-  // Log in with basic SOAP login (see documentation for other auth options)
-  conn.login(
-    "zhwhd3@resilient-raccoon-pg4msf.com",
-    "ckdqnr34#$" + "6sH35SQMdzKBI8RmPaf9tsfVm",
-    (err, res) => {
-      if (err) {
-        return console.error("Failed to log in to Salesforce: ", err);
-      }
-      console.log("Successfully logged in!");
-      // Run a SOQL query
-      conn.query("SELECT Id, Name FROM Account LIMIT 5", (err, result) => {
-        if (err) {
-          return console.error("Failed to run SOQL query: ", err);
-        }
-        // Display query results
-        var { records } = result;
-        console.log(`Fetched ${records.length} records:`);
-        records.forEach(record => {
-          console.log(`- ${record.Name} (${record.Id})`);
-        });
-      });
-    }
-  );
+});
+
+
 
 router.get('/',  (req, res) => { 
-    res.render('../views/login.ejs', {
-        records : records
-    });
+    try {
+        conn.login(
+            "zhwhd3@resilient-raccoon-pg4msf.com", 
+            "ckdqnr34#$" + "6sH35SQMdzKBI8RmPaf9tsfVm",
+            (err, reso) => {
+                console.log('Connected to Salesforce!');
+                conn.query("SELECT id, FirstName, LastName FROM Contact", (err, result) => {
+                    if (err) {
+                        return console.error("Failed to run SOQL query: ", err);
+                    }
+                    var { records } = result;
+                    let cooper = records
+                        .filter(x => x.LastName === 'Jones')[0];
+                    console.log(cooper);
+                    
+                    var LastName = cooper.LastName;
+                    console.log(LastName);
+                    
+                    res.render('../views/index.ejs', {
+                        LastName : LastName
+                    });
+                });
+
+            });
+        // now you can use conn to read/write data...
+        conn.logout();
+    } catch (err) {
+        console.error(err);
+    }
 
 });
 

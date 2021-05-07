@@ -19,6 +19,7 @@ var loginRouter = require('./routes/login');
 var app = express();
 
 app.set('view engine', 'ejs');
+app.set('view engine', 'html');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 // app.use(cookieParser());
@@ -33,7 +34,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', function(req, res, next) {
 	res.redirect('/login');
-	console.log(req.session);
+	//console.log(req.session);
 });
 
 
@@ -50,6 +51,7 @@ app.use('/login', loginRouter);
 app.use("/", express.static(path.join(__dirname,"./views")))
 
 app.engine('ejs', engine);
+app.engine('html', engine);
 
 app.listen(3000, () => {
 	console.log('server start');
