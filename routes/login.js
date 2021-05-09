@@ -45,31 +45,28 @@ router.get('/',  (req, res) => {
 });
 
 router.route('/').post(function(req, res) {
-	console.log(req.body)
-	var paramId = req.body.id || req.query.id;
-	var paramPassword = req.body.password || req.query.password;
-	
-	firebase.auth().signInWithEmailAndPassword(paramId, paramPassword)
-		.then(function(firebaseUser) {
-			var docUserinfo = db.collection('students').doc(`userinfo(${paramId})`);
-			var doc = docUserinfo.get()
-				.then(doc => {
-					var userid = doc.data().id;
-					var username = doc.data().name;
-					var usernickname = doc.data().nickname;
-					req.session.userid=userid;
-					req.session.username=username;
-					req.session.usernickname=usernickname;
-					// console.log(req.session.userid);
-					res.redirect('/main');
-				})
-				.catch(err => {
-					console.log('Error getting documents', err)
-				})
-		})
-		.catch(function(err) {
-			res.redirect('/login');
-		});
+	//console.log(req.body)
+    var paramName = req.body.LastName || req.body.LastName;
+	var paramEmail = req.body.id || req.query.id;
+    console.log(paramName);
+
+    try {
+        conn.login(
+            "zhwhd3@resilient-raccoon-pg4msf.com", 
+            "ckdqnr34#$" + "6sH35SQMdzKBI8RmPaf9tsfVm",
+            (err, reso) => {
+                console.log('Connected to Salesforce!!!');
+                conn.sobject("Account").create({ Name : 'My Account #2' }, function(err, ret) {
+                    if (err || !ret.success) { return console.error(err, ret); }
+                    console.log("Created record id : " + ret.id);
+                    // ...
+                  });
+            });
+        // now you can use conn to read/write data...
+        conn.logout();
+    } catch (err) {
+        console.error(err);
+    }
 					
 		
 });
