@@ -118,3 +118,48 @@
   .test {
     margin-top : 5px;
   }
+
+  select {
+    width: 120px;
+    padding: .8em .5em;
+    border: 0.5px solid #d1d3e2;
+    font-family: inherit;
+    background: url('arrow.jpg') no-repeat 95% 50%;
+    border-radius: 0px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  select::-ms-expand {
+    display: none;
+  }
+
+  .checkbox-container { position: relative; }
+
+  .checkbox-container input[type="checkbox"]{
+      width:12px; 
+      height:12px; 
+      padding:0; 
+      border:0 none; 
+      margin:0; 
+      position:absolute; 
+      left:0; 
+      top:0; 
+      overflow:hidden;
+      clip:rect(0 0 0 0);
+  }
+
+  .checkbox-container label{
+    height:22px; 
+    line-height:22px; 
+    padding-left:20px; 
+    display:inline-block; 
+    background:url(https://happyjung.diskn.com/data/lecture/icon_radio1.png) no-repeat 0 0;
+    vertical-align:middle; 
+    cursor:pointer;
+  }
+
+  .checkbox-container input[type="checkbox"]:checked + label{ background-position: 0 -22px; }
+
+

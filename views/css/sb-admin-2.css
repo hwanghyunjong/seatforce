@@ -66,7 +66,7 @@ body {
   line-height: 1.5;
   color: #858796;
   text-align: left;
-  background-color: #fff;
+  /* background-color: #fff; */
 }
 
 [tabindex="-1"]:focus {
@@ -1628,7 +1628,7 @@ pre code {
 .table-dark {
   color: #fff;
   background-color: #5a5c69;
-}
+} */
 
 .table-dark th,
 .table-dark td,
@@ -1644,10 +1644,10 @@ pre code {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.table-dark.table-hover tbody tr:hover {
+/* .table-dark.table-hover tbody tr:hover {
   color: #fff;
   background-color: rgba(255, 255, 255, 0.075);
-}
+} */
 
 @media (max-width: 575.98px) {
   .table-responsive-sm {

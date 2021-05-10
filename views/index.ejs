@@ -5,13 +5,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/style.css">
-
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> -->
+ 
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+ 
+
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
   <title>MHDP Full Calendar</title>
 
   <script>
@@ -92,11 +97,24 @@
       renderCalender();
     }
   </script>
+
+  <script>
+    function YnCheck(obj) {
+      var checked = obj.checked;
+      if(checked) {
+        obj.value ="Y";
+      } else {
+        obj.value = "N";
+      }
+    }
+
+  </script>
+
 </head>
 <body>
   <div class="calendar">
     <div class="title">
-      <h1 class="titleh"><%= LastName%></h1>
+      <h1 class="titleh">예약 신청</h1>
       <hr>
     </div>
     <div class="header">
@@ -120,27 +138,98 @@
       <div class="dates" style="margin-bottom: 50px;"></div>
     </div>
     <form class="user" action="/login" method="POST">
-      <div class="form-group row">
-        <div class="col-sm-6">
-          <input type="text" class="form-control form-control-user" name="LastName" placeholder="이름">
-        </div>
-      </div>
       <div class="form-group">
-        <input type="text" class="form-control form-control-user" name="nickname" placeholder="사용자닉네임">
+        <!-- <div class="col-sm-6"> -->
+          <div style="margin-left: 7px; margin-bottom: 5px;">예약고객명 *</div>
+          <input type="text" class="form-control form-control-user" name="LastName">
+        <!-- </div> -->
       </div>
+
       <div class="form-group">
-        <input type="email" class="form-control form-control-user" name="Id" placeholder="이메일을 입력하세요! ">
+        <!-- <select class='form-control form-control-user' name='year' onChange={onChange} value={year}>
+          <option value='0'>Year</option>
+          "generateYearOptions()"
+
+        </select> -->
+        <div style="margin-left: 7px; margin-bottom: 5px;">생년월일</div>
+        <input type="date" class="form-control form-control-user" name="birthday" min='1930-01-01' max='2000-12-31'>
       </div>
-      <div class="form-group row">
-        <div class="col-sm-6 mb-3 mb-sm-0">
-          <input type="password" class="form-control form-control-user" name="Password" placeholder="비밀번호를 입력하세요!">
-        </div>
-        <div class="col-sm-6">
-          <input type="password" class="form-control form-control-user" name="RepeatPassword" placeholder="비밀번호 확인이니 다시 입력해주세요!">
+
+      <div class="field">
+        <div style="margin-left: 7px; margin-bottom: 5px;">휴대폰</div>
+        <div class="control has-icons-left" style="margin-bottom: 1.5rem; height: 40px;">
+          <div class="select" style=" float : left;">
+            <select style="margin-bottom : 5px;" name="firstnum">
+              <option selected></option>
+              <option>010</option>
+              <option>011</option>
+              <option>016</option>
+              <option>017</option>
+              <option>018</option>
+              <option>019</option>
+            </select>
+          </div>
+          <span style="width: 5%; text-align: center; font-size:22px; margin-left: 20px; float: left;">-</span>
+          <div class="col-sm-4" style="float: left;">
+            <input type="text" class="form-control form-control-user" name="middlenum" maxlength="4">
+          </div>
+
+          <span style="width: 5%; text-align: center; font-size:22px; float: left;">-</span>
+          <div class="col-sm-4" style="float: left;">
+            <input type="text" class="form-control form-control-user" name="lastnum" maxlength="4">
+          </div>
         </div>
       </div>
+
+      <div class="field">
+        <div style="margin-left: 7px; margin-bottom: 5px;">성별</div>
+        <div class="control has-icons-left" style="margin-bottom: 1.5rem; height: 40px;">
+          <div class="select" style=" float : left;">
+            <select style="margin-bottom : 5px; width : 150px;" name="gender">
+              <option selected></option>
+              <option>남성</option>
+              <option>여성</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div style="margin-left: 7px; margin-bottom: 5px;">이메일</div>
+        <input type="email" class="form-control form-control-user" name="Id">
+      </div>
+
+      <input type="hidden" name="agree1" value="G70">
+      <input type="hidden" name="agree2" value="G80">
+      <input type="hidden" name="agree3" value="G90">
+      <input type="hidden" name="agree4" value="GV70">
+      <input type="hidden" name="agree5" value="GV80">
+
+      <div class="checkbox-container">
+        <div style="margin-left: 7px; margin-bottom: 8px;">관심차종</div>
+        <input type="checkbox" name="car1" id="checkbox_agree1" value="1" onchange="YnCheck(this);"> <label for="checkbox_agree1">&nbsp;G70</label>
+        &nbsp;
+        <input type="checkbox" name="car2" id="checkbox_agree2" value="2" onchange="YnCheck(this);"> <label for="checkbox_agree2">&nbsp;G80</label>
+        &nbsp;
+        <input type="checkbox" name="car3" id="checkbox_agree3" value="3" onchange="YnCheck(this);"> <label for="checkbox_agree3">&nbsp;G90</label>
+        &nbsp;
+        <input type="checkbox" name="car4" id="checkbox_agree4" value="4" onchange="YnCheck(this);"> <label for="checkbox_agree4">&nbsp;GV70</label>
+        &nbsp;
+        <input type="checkbox" name="car5" id="checkbox_agree5" value="5" onchange="YnCheck(this);"> <label for="checkbox_agree5">&nbsp;GV80</label>
+      </div>
+
+      <div class="form-group">
+        <div style="margin-left: 7px; margin-bottom: 5px; margin-top: 10px;">방문인원</div>
+        <input type="number" class="form-control form-control-user" name="visitor" style="width: 30%;">
+      </div>
+
+      <div class="form-group">
+        <div style="margin-left: 7px; margin-bottom: 5px; margin-top: 10px;">요청사항</div>
+        <textarea id="story" name="story" rows="5" class="form-control form-control-user" style="border-radius: 1rem;"></textarea>
+      </div>
+
       <button type="submit" class="btn btn-primary btn-user btn-block">
-        회원가입
+        확   인
       </button>
     </form>
   </div>
