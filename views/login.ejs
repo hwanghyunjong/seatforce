@@ -1,41 +1,323 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>COL_FIREND - 로그인</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/style.css">
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> -->
+ 
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+ 
 
   <!-- Custom styles for this template-->
-  <link href="css/sb-admin-2.min.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-app.js"></script>
+  <link href="../css/sb-admin-2.min.css" rel="stylesheet">
+
+  <title>MHDP Full Calendar</title>
+
+  <script>
+    //window.alert(lastname);
+
+    let date = new Date();
+
+    const renderCalender = () => {
+      const viewYear = date.getFullYear();
+      const viewMonth = date.getMonth();
+
+      document.querySelector('.year-month').textContent = `${viewYear}년 ${viewMonth + 1}월`;
+
+      const prevLast = new Date(viewYear, viewMonth, 0);
+      const thisLast = new Date(viewYear, viewMonth + 1, 0);
+
+      const PLDate = prevLast.getDate();
+      const PLDay = prevLast.getDay();
+
+      const TLDate = thisLast.getDate();
+      const TLDay = thisLast.getDay();
+
+      const prevDates = [];
+      const thisDates = [...Array(TLDate + 1).keys()].slice(1);
+      const nextDates = [];
+
+      if (PLDay !== 6) {
+        for (let i = 0; i < PLDay + 1; i++) {
+          prevDates.unshift(PLDate - i);
+        }
+      }
+
+      for (let i = 1; i < 7 - TLDay; i++) {
+        nextDates.push(i);
+      }
+
+      const dates = prevDates.concat(thisDates, nextDates);
+      const firstDateIndex = dates.indexOf(1);
+      const lastDateIndex = dates.lastIndexOf(TLDate);
+
+      dates.forEach((date, i) => {
+        const condition = i >= firstDateIndex && i < lastDateIndex + 1
+                          ? 'this'
+                          : 'other';
+        dates[i] = `<div class="date"><span class=${condition}>${date}</span>
+                                      <span id=test></span></div>`;
+      });
+
+      document.querySelector('.dates').innerHTML = dates.join('');
+
+      // 문자열로 가져옴
+      var lastname = '<%= LastName%>';
+      window.alert(lastname);
+
+      // Real 배열
+      var lastname1 = lastname.split(',');
+      
+      var time = [];
+
+      for (i=0; i<lastname1.length; i++) {
+          time.push(lastname1[i].substring(0, 5));
+      }
+      
+      var timetable = ['10:00','12:00','14:00','16:00'];
+
+      timetable = timetable.filter(x => !time.includes(x));
+
+      timetable.forEach((times, i) => {
+        timetable[i] = `<label class="radio-button" style="margin-right: 50px;">
+                        <input type="radio" name="radio" checked="checked">
+                          <span class="label-visible">
+                            <span class="fake-radiobutton"></span>&nbsp;
+                            ${times}
+                            </span>&nbsp;&nbsp;
+                      </label>`;
+      });
+
+      document.querySelector('.lyrics_hide').innerHTML = timetable.join('');
+
+      let today = new Date();
+
+      if (viewMonth === today.getMonth() && viewYear === today.getFullYear()) {
+        for (let date of document.querySelectorAll('.this')) {
+          if (+date.innerText === today.getDate()) {
+            date.classList.add('today');
+            break;
+          }
+        }
+      }
+
+      for (let date of document.querySelectorAll('.this')) {
+        if (parseInt(+date.innerText) > today.getDate() || (viewMonth+1) > (today.getMonth()+1) ) {
+          date.classList.add('yes');
+        }
+      }
+
+    };
+
+    const prevMonth = () => {
+      date.setMonth(date.getMonth() - 1);
+      renderCalender();
+    };
+
+    const nextMonth = () => {
+      date.setMonth(date.getMonth() + 1);
+      renderCalender();
+    };
+
+    const goToday = () => {
+      date = new Date();
+      renderCalender();
+    };
+
+    window.onload = function() {
+      renderCalender();
+    }
+  </script>
+
+  <script>
+    function YnCheck(obj) {
+      var checked = obj.checked;
+      if(checked) {
+        obj.value ="Y";
+      } else {
+        obj.value = "N";
+      }
+    }
+
+    $(function() { // 자동 실행
+      $('span.this.yes').click(function() {
+        spread_in();
+      })
+
+      // $('#btn_spread').on('click', spread_in);
+      $('#btn_play').on('click', btn_open);
+
+      //alert($('#userno').val());
+    });
+    
+    function spread_in() {
+      if ($('#btn_spread').html() == '펼치기 ▽' ) { // 펼치기 버튼 클릭시
+        $('#lyrics').attr('class', 'lyrics'); // lyrics id의 태그의 클래스가 lyrics로 변경
+        $('#btn_spread').html('접기 △'); // btn_spread id 태그의 텍스트가 접기로 변경
+      } else {
+        $('#lyrics').attr('class', 'lyrics_hide');
+        $('#btn_spread').html('펼치기 ▽');
+      }
+    }
+    
+  </script>
 
 </head>
+<body>
+  <div class="calendar">
+    <div class="title">
+      <h1 class="titleh" style="color: #a36b4f">예약신청</h1><br>
+      <hr style="font-weight: 300; margin-bottom: 30px;">
+      <p style="margin-bottom: 5px;">※ 온라인 예약은 선착순으로 배정됩니다.</p>
+      <p style="margin-bottom: 5px;">※ 제네시스 강남은 전시된 차량을 체험하는 상품 체험과 시승 체험을 운영합니다.</p>
+      <p style="margin-bottom: 5px;">※ 6명 이상의 단체의 경우 반드시 전화(02-556-9870)로 문의하시기 바랍니다.</p>
+      <p>※ 예약일 기준 한 달 전부터 예약이 가능합니다.</p>
+      <hr style="font-weight: 300; margin-top: 30px;">
+    </div>
+    <div class="header">
+      <div class="year-month"></div>
+      <div style="margin-left: 7px; margin-bottom: 5px; color: slategray; font-size: 13px;">* 날짜를 클릭하여 시간을 선택해 주세요!</div>
+      <div class="nav">
+        <button class="nav-btn go-prev" onclick="prevMonth()">&lt;</button>
+        <button class="nav-btn go-today" onclick="goToday()">Today</button>
+        <button class="nav-btn go-next" onclick="nextMonth()">&gt;</button>
+      </div>
+    </div>
+    <div class="main">
+      <div class="days">
+        <div class="day">일</div>
+        <div class="day">월</div>
+        <div class="day">화</div>
+        <div class="day">수</div>
+        <div class="day">목</div>
+        <div class="day">금</div>
+        <div class="day">토</div>
+      </div>
+      <div class="dates" style="margin-bottom: 50px;"></div>
+    </div>
 
-<body class="bg-gradient-primary">
-    <h1><%= LastName%></h1>
+    <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">예약 시간</div>
+    <div id='lyrics' class='lyrics_hide'>  
+      <!-- 
+      <label class="radio-button" style="margin-right: 50px;">
+        <input type="radio" name="radio" checked="checked">
+        <span class="label-visible">
+          <span class="fake-radiobutton"></span>&nbsp;
+          10:00
+        </span>&nbsp;&nbsp;
+      </label> -->
+    </div>
+    
+    <span style="font-size: 13px;">
+      <a id='btn_spread' class="up" style="color: #ffffff;">펼치기 ▽</a>
+    </span>
 
+    <form class="user" action="/login" method="POST">
+      <div class="form-group">
+        <!-- <div class="col-sm-6"> -->
+          <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">예약고객명 *</div>
+          <input type="text" class="form-control form-control-user" name="LastName">
+        <!-- </div> -->
+      </div>
 
-  <!-- Bootstrap core JavaScript-->
-  <script src="vendor/jquery/jquery.min.js"></script>
-  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <div class="form-group">
+        <!-- <select class='form-control form-control-user' name='year' onChange={onChange} value={year}>
+          <option value='0'>Year</option>
+          "generateYearOptions()"
 
-  <!-- Core plugin JavaScript-->
-  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+        </select> -->
+        <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">생년월일</div>
+        <input type="date" class="form-control form-control-user" name="birthday" min='1930-01-01' max='2000-12-31'>
+      </div>
 
-  <!-- Custom scripts for all pages-->
-  <script src="js/sb-admin-2.min.js"></script>
+      <div class="field">
+        <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">휴대폰</div>
+        <div class="control has-icons-left" style="margin-bottom: 1.5rem; height: 40px;">
+          <div class="select" style=" float : left;">
+            <select style="margin-bottom : 5px;" name="firstnum">
+              <option selected></option>
+              <option>010</option>
+              <option>011</option>
+              <option>016</option>
+              <option>017</option>
+              <option>018</option>
+              <option>019</option>
+            </select>
+          </div>
+          <span style="width: 5%; text-align: center; font-size:22px; margin-left: 20px; float: left;">-</span>
+          <div class="col-sm-4" style="float: left;">
+            <input type="text" class="form-control form-control-user" name="middlenum" maxlength="4">
+          </div>
 
+          <span style="width: 5%; text-align: center; font-size:22px; float: left;">-</span>
+          <div class="col-sm-4" style="float: left;">
+            <input type="text" class="form-control form-control-user" name="lastnum" maxlength="4">
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">성별</div>
+        <div class="control has-icons-left" style="margin-bottom: 1.5rem; height: 40px;">
+          <div class="select" style=" float : left;">
+            <select style="margin-bottom : 5px; width : 150px;" name="gender">
+              <option selected></option>
+              <option>남성</option>
+              <option>여성</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">이메일</div>
+        <input type="email" class="form-control form-control-user" name="Id">
+      </div>
+
+      <input type="hidden" name="agree1" value="G70">
+      <input type="hidden" name="agree2" value="G80">
+      <input type="hidden" name="agree3" value="G90">
+      <input type="hidden" name="agree4" value="GV70">
+      <input type="hidden" name="agree5" value="GV80">
+
+      <div class="checkbox-container">
+        <div style="margin-left: 7px; margin-bottom: 8px; color: #a36b4f">관심차종</div>
+        <input type="checkbox" name="car1" id="checkbox_agree1" value="1" onchange="YnCheck(this);"> <label for="checkbox_agree1">&nbsp;G70</label>
+        &nbsp;&nbsp;
+        <input type="checkbox" name="car2" id="checkbox_agree2" value="2" onchange="YnCheck(this);"> <label for="checkbox_agree2">&nbsp;G80</label>
+        &nbsp;&nbsp;
+        <input type="checkbox" name="car3" id="checkbox_agree3" value="3" onchange="YnCheck(this);"> <label for="checkbox_agree3">&nbsp;G90</label>
+        &nbsp;&nbsp;
+        <input type="checkbox" name="car4" id="checkbox_agree4" value="4" onchange="YnCheck(this);"> <label for="checkbox_agree4">&nbsp;GV70</label>
+        &nbsp;&nbsp;
+        <input type="checkbox" name="car5" id="checkbox_agree5" value="5" onchange="YnCheck(this);"> <label for="checkbox_agree5">&nbsp;GV80</label>
+      </div>
+
+      <div class="form-group">
+        <div style="margin-left: 7px; margin-bottom: 5px; margin-top: 10px; color: #a36b4f">방문인원</div>
+        <input type="number" class="form-control form-control-user" name="visitor" style="width: 30%;">
+      </div>
+
+      <div class="form-group">
+        <div style="margin-left: 7px; margin-bottom: 5px; margin-top: 10px; color: #a36b4f">요청사항</div>
+        <textarea id="story" name="story" rows="5" class="form-control form-control-user" style="border-radius: 1rem;"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-user btn-block">
+        확   인
+      </button>
+    </form>
+  </div>
+  <div>
+    
+  </div>
+  <!-- <script src="js/index.js"></script> -->
 </body>
-
 </html>

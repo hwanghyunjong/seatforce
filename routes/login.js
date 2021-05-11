@@ -4,11 +4,11 @@ var jsforce = require('jsforce');
 var dateFormat = require('dateformat');
 var fs = require('fs');
 var path = require('path');
+const { strict } = require('assert');
 
 let conn = new jsforce.Connection({
     loginUrl : "https://resilient-raccoon-pg4msf-dev-ed.my.salesforce.com"
 });
-
 
 
 router.get('/',  (req, res) => { 
@@ -34,7 +34,6 @@ router.get('/',  (req, res) => {
                         LastName : LastName
                     });
                 });
-
             });
         // now you can use conn to read/write data...
         conn.logout();
@@ -43,6 +42,47 @@ router.get('/',  (req, res) => {
     }
 
 });
+
+router.get('/:day',  (req, res) => { 
+    var params = req.params;
+    console.log(params.day);
+    try {
+        conn.login(
+            "zhwhd3@resilient-raccoon-pg4msf.com", 
+            "ckdqnr34#$" + "6sH35SQMdzKBI8RmPaf9tsfVm",
+            (err, reso) => {
+                console.log('Connected to Salesforce!');
+                conn.query(`SELECT Name, ApplicationDate__c, ApplicationTime__c FROM Lead Where ApplicationDate__c = 2021-05-${params.day}`, (err, result) => {
+                    if (err) {
+                        return console.error("Failed to run SOQL query: ", err);
+                    }
+                    var { records } = result;
+                    console.log(records);
+
+                    var LastName = [];
+
+                    for (i=0; i<records.length; i++) {
+                        LastName.push(records[i].ApplicationTime__c);
+                    };
+
+                    LastName.push('14:00:00.000Z');
+
+                    console.log(LastName);
+                    
+                    res.render('../views/login.ejs', {
+                        LastName : LastName
+                    });
+                });
+            });
+        // now you can use conn to read/write data...
+        conn.logout();
+    } catch (err) {
+        console.error(err);
+    }
+
+});
+
+
 
 router.route('/').post(function(req, res) {
 	//console.log(req.body)
@@ -68,6 +108,8 @@ router.route('/').post(function(req, res) {
     var check4 = req.body.agree4;
     var check5 = req.body.agree5;
 
+    var gender = req.body.gender;
+
     var checks = [check1, check2, check3, check4, check5];
 
     var array = [];
@@ -79,13 +121,13 @@ router.route('/').post(function(req, res) {
         }
     }
 
-    //console.log(array);
+    console.log(array.length);
 
     for (j=0; j<array.length; j++) {
-        if (j != array.length) {
-            aa = `${array[j]};`;
+        if (j < array.length-1) {
+            aa += `${array[j]};`;
         } else {
-            aa.concat(`${array[j]}`);
+            aa += `${array[j]}`;
         }
     }
 
@@ -107,8 +149,8 @@ router.route('/').post(function(req, res) {
                         Company	 : 'sobetec',
                         CurrencyIsoCode : 'KRW',
                         Status : 'Open - Not Contacted',
-                        VehicleModelOfInterest__c : ``
-                        
+                        VehicleModelOfInterest__c : aa,
+                        Gender__c : gender
                     }, 
                     function(err, ret) {
                         if (err || !ret.success) { return console.error(err, ret); 
