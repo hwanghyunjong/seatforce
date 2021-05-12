@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../../css/style.css">
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -16,7 +16,7 @@
  
 
   <!-- Custom styles for this template-->
-  <link href="../css/sb-admin-2.min.css" rel="stylesheet">
+  <link href="../../css/sb-admin-2.min.css" rel="stylesheet">
 
   <title>MHDP Full Calendar</title>
 
@@ -27,12 +27,17 @@
 
     const renderCalender = () => {
       const viewYear = date.getFullYear();
-      const viewMonth = date.getMonth();
+      // const viewMonth = date.getMonth();
+      const viewMonth_1 = '<%=monthdata%>';
+      const viewMonth = parseInt(viewMonth_1);
 
-      document.querySelector('.year-month').textContent = `${viewYear}년 ${viewMonth + 1}월`;
+      const ViewDay_1 = '<%=daydata%>';
+      const ViewDay = parseInt(ViewDay_1);
 
-      const prevLast = new Date(viewYear, viewMonth, 0);
-      const thisLast = new Date(viewYear, viewMonth + 1, 0);
+      document.querySelector('.year-month').textContent = `${viewYear}년 ${viewMonth}월`;
+      
+      const prevLast = new Date(viewYear, viewMonth - 1, 0);
+      const thisLast = new Date(viewYear, viewMonth, 0);
 
       const PLDate = prevLast.getDate();
       const PLDay = prevLast.getDay();
@@ -44,14 +49,23 @@
       const thisDates = [...Array(TLDate + 1).keys()].slice(1);
       const nextDates = [];
 
+      let today = new Date();
+
       if (PLDay !== 6) {
         for (let i = 0; i < PLDay + 1; i++) {
-          prevDates.unshift(PLDate - i);
+          prevDates.unshift(' ');
         }
       }
 
       for (let i = 1; i < 7 - TLDay; i++) {
-        nextDates.push(i);
+        nextDates.push(' ');
+      }
+
+      var month = viewMonth;
+      var monthint = month.toString();
+
+      if (monthint.length == 1) {
+        monthint = '0'+monthint;
       }
 
       const dates = prevDates.concat(thisDates, nextDates);
@@ -62,15 +76,29 @@
         const condition = i >= firstDateIndex && i < lastDateIndex + 1
                           ? 'this'
                           : 'other';
-        dates[i] = `<div class="date"><span class=${condition}>${date}</span>
-                                      <span id=test></span></div>`;
+        if (parseInt(date) > today.getDate() || (viewMonth) > (today.getMonth()+1)) {
+          if((i+7) % 7 == 0) {
+            dates[i] = `<div class="date"><span class=${condition}><a href="http://localhost:3000/login/${monthint}/${date}" style="color: #D13E3E;">${date}</a></span>
+              <span id=test></span></div>`;
+          } else if ((i+7) % 7 == 6) {
+            dates[i] = `<div class="date"><span class=${condition}><a href="http://localhost:3000/login/${monthint}/${date}" style="color: #396EE2;">${date}</a></span>
+              <span id=test></span></div>`;
+          } else {
+            dates[i] = `<div class="date"><span class=${condition}><a href="http://localhost:3000/login/${monthint}/${date}" style="color: #858796;">${date}</a></span>
+              <span id=test></span></div>`;
+          }
+          
+        } else {
+          dates[i] = `<div class="date"><span class=${condition}>${date}</span>
+                                        <span id=test></span></div>`;
+        }
+
       });
 
       document.querySelector('.dates').innerHTML = dates.join('');
 
       // 문자열로 가져옴
       var lastname = '<%= LastName%>';
-      window.alert(lastname);
 
       // Real 배열
       var lastname1 = lastname.split(',');
@@ -85,50 +113,85 @@
 
       timetable = timetable.filter(x => !time.includes(x));
 
-      timetable.forEach((times, i) => {
-        timetable[i] = `<label class="radio-button" style="margin-right: 50px;">
-                        <input type="radio" name="radio" checked="checked">
-                          <span class="label-visible">
-                            <span class="fake-radiobutton"></span>&nbsp;
-                            ${times}
-                            </span>&nbsp;&nbsp;
-                      </label>`;
-      });
+      if ((viewMonth) < (today.getMonth()+1) || (viewMonth == today.getMonth()+1 && ViewDay < today.getDate())) {
+        timetable = [];
+      }
 
+      window.alert(timetable);
+
+      if (timetable.length > 0 ) {
+        timetable.forEach((times, i) => {
+          timetable[i] = `<label class="radio-button" style="margin-right: 50px;">
+                          <input type="radio" name="radio" checked="checked" value="${times}" onclick='getTime(event)'>
+                            <span class="label-visible">
+                              <span class="fake-radiobutton"></span>&nbsp;
+                              ${times}
+                              </span>&nbsp;&nbsp;
+                        </label>`;
+        });
+      } else {
+        timetable[0] = `<span>예약이 꽉 차있습니다 ㅠㅠ</span>`;
+      }
+      
+      
       document.querySelector('.lyrics_hide').innerHTML = timetable.join('');
 
-      let today = new Date();
-
-      if (viewMonth === today.getMonth() && viewYear === today.getFullYear()) {
+      if ((viewMonth-1) === today.getMonth() && viewYear === today.getFullYear()) {
         for (let date of document.querySelectorAll('.this')) {
           if (+date.innerText === today.getDate()) {
             date.classList.add('today');
             break;
-          }
+          } 
         }
       }
 
-      for (let date of document.querySelectorAll('.this')) {
+      /* for (let date of document.querySelectorAll('.this')) {
         if (parseInt(+date.innerText) > today.getDate() || (viewMonth+1) > (today.getMonth()+1) ) {
           date.classList.add('yes');
         }
-      }
+      } */
 
     };
 
     const prevMonth = () => {
-      date.setMonth(date.getMonth() - 1);
-      renderCalender();
+      var month = '<%= monthdata %>';
+      var month_int = parseInt(month) - 1;
+
+      var month_str = month_int.toString();
+
+      if (month_str.length == 1) {
+        month_str = '0'+month_str;
+      }
+
+      location.href = `/login/${month_str}/01`;
     };
 
     const nextMonth = () => {
-      date.setMonth(date.getMonth() + 1);
-      renderCalender();
+      var month = '<%= monthdata %>';
+      var month_int = parseInt(month) + 1;
+
+      var month_str = month_int.toString();
+
+      if (month_str.length == 1) {
+        month_str = '0'+month_str;
+      }
+
+      location.href = `/login/${month_str}/01`;
     };
 
     const goToday = () => {
       date = new Date();
-      renderCalender();
+      var month = date.getMonth() + 1;
+
+      var month_str = month.toString();
+
+      if (month_str.length == 1) {
+        month_str = '0'+month_str;
+      }
+
+      location.href = `/login/${month_str}/01`;
+
+      // renderCalender();
     };
 
     window.onload = function() {
@@ -136,7 +199,7 @@
     }
   </script>
 
-  <script>
+  <script>;
     function YnCheck(obj) {
       var checked = obj.checked;
       if(checked) {
@@ -146,27 +209,51 @@
       }
     }
 
+    function getTime(event) {
+      alert(document.getElementById('timevalue').value);
+      
+      document.getElementById('timevalue').value = event.target.value;
+
+      alert(document.getElementById('timevalue').value);
+
+    }
+
     $(function() { // 자동 실행
-      $('span.this.yes').click(function() {
+      /* $('span.this.yes').click(function() {
         spread_in();
-      })
+      }) */
+
+
+      $('#radioButton').click(function () {
+        // getter
+        var radioVal = $('input[name="radio"]:checked').val();
+        alert(radioVal);
+      });
 
       // $('#btn_spread').on('click', spread_in);
       $('#btn_play').on('click', btn_open);
 
       //alert($('#userno').val());
     });
-    
-    function spread_in() {
-      if ($('#btn_spread').html() == '펼치기 ▽' ) { // 펼치기 버튼 클릭시
-        $('#lyrics').attr('class', 'lyrics'); // lyrics id의 태그의 클래스가 lyrics로 변경
-        $('#btn_spread').html('접기 △'); // btn_spread id 태그의 텍스트가 접기로 변경
-      } else {
-        $('#lyrics').attr('class', 'lyrics_hide');
-        $('#btn_spread').html('펼치기 ▽');
-      }
+
+    var month = '<%= monthdata %>';
+    var month_int = parseInt(month);
+
+    var month_str = month_int.toString();
+
+    if (month_str.length == 1) {
+      month_str = '0'+month_str;
     }
-    
+
+    var day = '<%= daydata %>';
+    var day_int = parseInt(day);
+
+    var day_str = day_int.toString();
+
+    if (day_str.length == 1) {
+      day_str = '0'+day_str;
+    }
+
   </script>
 
 </head>
@@ -204,6 +291,7 @@
     </div>
 
     <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">예약 시간</div>
+    
     <div id='lyrics' class='lyrics_hide'>  
       <!-- 
       <label class="radio-button" style="margin-right: 50px;">
@@ -309,6 +397,10 @@
         <div style="margin-left: 7px; margin-bottom: 5px; margin-top: 10px; color: #a36b4f">요청사항</div>
         <textarea id="story" name="story" rows="5" class="form-control form-control-user" style="border-radius: 1rem;"></textarea>
       </div>
+
+      <input type="hidden" name='yearmonthday' value='2021-<%=monthdata%>-<%=daydata%>'>
+
+      <input type="hidden" id='timevalue' name='timevalue' value="...">
 
       <button type="submit" class="btn btn-primary btn-user btn-block">
         확   인

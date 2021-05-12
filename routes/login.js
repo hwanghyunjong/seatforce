@@ -1,21 +1,25 @@
 var express = require('express');
 var router = express.Router();
 var jsforce = require('jsforce');
+var url = require('url');
 var dateFormat = require('dateformat');
 var fs = require('fs');
 var path = require('path');
 const { strict } = require('assert');
 
 let conn = new jsforce.Connection({
-    loginUrl : "https://resilient-raccoon-pg4msf-dev-ed.my.salesforce.com"
+    loginUrl : "https://sobetec2.my.salesforce.com"
 });
 
 
 router.get('/',  (req, res) => { 
+    var queryData = url.parse(req.url, true).query;
+    var title = queryData.id;
+
     try {
         conn.login(
-            "zhwhd3@resilient-raccoon-pg4msf.com", 
-            "ckdqnr34#$" + "6sH35SQMdzKBI8RmPaf9tsfVm",
+            "hjhwang@sobetec.demo", 
+            "thqpWkd12" + "oJSpN8f0mgnM9Z6Jjjoc560D",
             (err, reso) => {
                 console.log('Connected to Salesforce!');
                 conn.query("SELECT id, FirstName, LastName FROM Contact", (err, result) => {
@@ -31,7 +35,8 @@ router.get('/',  (req, res) => {
                     //console.log(LastName);
                     
                     res.render('../views/index.ejs', {
-                        LastName : LastName
+                        LastName : LastName,
+                        title : title
                     });
                 });
             });
@@ -43,16 +48,16 @@ router.get('/',  (req, res) => {
 
 });
 
-router.get('/:day',  (req, res) => { 
+router.get('/:month/:day',  (req, res) => { 
     var params = req.params;
     console.log(params.day);
     try {
         conn.login(
-            "zhwhd3@resilient-raccoon-pg4msf.com", 
-            "ckdqnr34#$" + "6sH35SQMdzKBI8RmPaf9tsfVm",
+            "hjhwang@sobetec.demo", 
+            "thqpWkd12" + "oJSpN8f0mgnM9Z6Jjjoc560D",
             (err, reso) => {
                 console.log('Connected to Salesforce!');
-                conn.query(`SELECT Name, ApplicationDate__c, ApplicationTime__c FROM Lead Where ApplicationDate__c = 2021-05-${params.day}`, (err, result) => {
+                conn.query(`SELECT Name, ApplicationDate__c, ApplicationTime__c FROM TestDriveExperience__c Where ApplicationDate__c = 2021-${params.month}-${params.day}`, (err, result) => {
                     if (err) {
                         return console.error("Failed to run SOQL query: ", err);
                     }
@@ -65,12 +70,12 @@ router.get('/:day',  (req, res) => {
                         LastName.push(records[i].ApplicationTime__c);
                     };
 
-                    LastName.push('14:00:00.000Z');
-
                     console.log(LastName);
                     
                     res.render('../views/login.ejs', {
-                        LastName : LastName
+                        LastName : LastName,
+                        monthdata : params.month,
+                        daydata : params.day
                     });
                 });
             });
@@ -110,6 +115,12 @@ router.route('/').post(function(req, res) {
 
     var gender = req.body.gender;
 
+    var yearmonth = req.body.yearmonthday;
+
+    var radio = req.body.timevalue;
+    
+    console.log(radio);
+
     var checks = [check1, check2, check3, check4, check5];
 
     var array = [];
@@ -135,11 +146,11 @@ router.route('/').post(function(req, res) {
 
     try {
         conn.login(
-            "zhwhd3@resilient-raccoon-pg4msf.com", 
-            "ckdqnr34#$" + "6sH35SQMdzKBI8RmPaf9tsfVm",
+            "hjhwang@sobetec.demo", 
+            "thqpWkd12" + "oJSpN8f0mgnM9Z6Jjjoc560D",
             (err, reso) => {
                 console.log('Connected to Salesforce!!!');
-                conn.sobject("Lead")
+                conn.sobject("TestDriveExperience__c")
                     .create(
                     { 
                         LastName : paramName,
@@ -164,7 +175,6 @@ router.route('/').post(function(req, res) {
     } catch (err) {
         console.error(err);
     }
-					
 		
 });
 

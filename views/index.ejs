@@ -13,7 +13,6 @@
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> -->
  
   <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
- 
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -22,6 +21,7 @@
 
   <script>
     var lastname = '<%= LastName%>';
+    var title = '<%= title%>';
 
     let date = new Date();
 
@@ -62,8 +62,22 @@
         const condition = i >= firstDateIndex && i < lastDateIndex + 1
                           ? 'this'
                           : 'other';
-        dates[i] = `<div class="date"><span class=${condition}>${date}</span>
-                                      <span id=test></span></div>`;
+        if (parseInt(date) > today.getDate() || (viewMonth) > (today.getMonth()+1)) {
+          if((i+7) % 7 == 0) {
+            dates[i] = `<div class="date"><span class=${condition}><a href="http://localhost:3000/login/${monthint}/${date}?id=${title}" style="color: #D13E3E;">${date}</a></span>
+              <span id=test></span></div>`;
+          } else if ((i+7) % 7 == 6) {
+            dates[i] = `<div class="date"><span class=${condition}><a href="http://localhost:3000/login/${monthint}/${date}?id=${title}" style="color: #396EE2;">${date}</a></span>
+              <span id=test></span></div>`;
+          } else {
+            dates[i] = `<div class="date"><span class=${condition}><a href="http://localhost:3000/login/${monthint}/${date}?id=${title}" style="color: #858796;">${date}</a></span>
+              <span id=test></span></div>`;
+          }
+          
+        } else {
+          dates[i] = `<div class="date"><span class=${condition}>${date}</span>
+                                        <span id=test></span></div>`;
+        }
       });
 
       document.querySelector('.dates').innerHTML = dates.join('');
@@ -118,26 +132,15 @@
     }
 
     $(function() { // 자동 실행
-      $('span.this.yes').click(function() {
+      /* $('span.this.yes').click(function() {
         spread_in();
-      })
+      }) */
 
       // $('#btn_spread').on('click', spread_in);
       $('#btn_play').on('click', btn_open);
 
       //alert($('#userno').val());
     });
-    
-    function spread_in() {
-      if ($('#btn_spread').html() == '펼치기 ▽' ) { // 펼치기 버튼 클릭시
-        $('#lyrics').attr('class', 'lyrics'); // lyrics id의 태그의 클래스가 lyrics로 변경
-        $('#btn_spread').html('접기 △'); // btn_spread id 태그의 텍스트가 접기로 변경
-      } else {
-        $('#lyrics').attr('class', 'lyrics_hide');
-        $('#btn_spread').html('펼치기 ▽');
-      }
-    }
-    
   </script>
 
 </head>
@@ -173,44 +176,6 @@
       </div>
       <div class="dates" style="margin-bottom: 50px;"></div>
     </div>
-    <div id='lyrics' class='lyrics_hide'>
-      <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">예약 시간</div>
-      <label class="radio-button" style="margin-right: 50px;">
-        <input type="radio" name="radio" checked="checked">
-        <span class="label-visible">
-          <span class="fake-radiobutton"></span>&nbsp;
-          10:00
-        </span>&nbsp;&nbsp;
-      </label>
-      
-      <label class="radio-button" style="margin-right: 50px;">
-        <input type="radio" name="radio" checked="checked">
-        <span class="label-visible">
-          <span class="fake-radiobutton"></span>&nbsp;
-          12:00
-        </span>&nbsp;&nbsp;
-      </label>
-
-      <label class="radio-button" style="margin-right: 50px;">
-        <input type="radio" name="radio" checked="checked">
-        <span class="label-visible">
-          <span class="fake-radiobutton"></span>&nbsp;
-          14:00
-        </span>&nbsp;&nbsp;
-      </label>
-
-      <label class="radio-button" style="margin-right: 50px;">
-        <input type="radio" name="radio" checked="checked">
-        <span class="label-visible">
-          <span class="fake-radiobutton"></span>&nbsp;
-          16:00
-        </span>&nbsp;&nbsp;
-      </label>
-    </div>
-    
-    <span style="font-size: 13px;">
-      <a id='btn_spread' class="up" style="color: #ffffff;">펼치기 ▽</a>
-    </span>
 
     <form class="user" action="/login" method="POST">
       <div class="form-group">

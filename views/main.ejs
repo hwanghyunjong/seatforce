@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> -->
+ 
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+  <title>MHDP Full Calendar</title>
+
+  <script>
+
+    const button_act = () => {   
+      var aa = document.getElementById('firstnum').value;
+
+      location.href = `/login?id=${aa}`;
+    };
+
+
+    function YnCheck(obj) {
+      var checked = obj.checked;
+      if(checked) {
+        obj.value ="Y";
+      } else {
+        obj.value = "N";
+      }
+    }
+
+    function getTime(event) {
+      alert(document.getElementById('firstnum').value);
+
+    }
+
+    $(function() { // 자동 실행
+      /* $('span.this.yes').click(function() {
+        spread_in();
+      }) */
+
+      // $('#btn_spread').on('click', spread_in);
+      $('#btn_play').on('click', btn_open);
+
+      //alert($('#userno').val());
+    });
+
+  </script>
+
+</head>
+<body>
+  <div class="calendar">
+    <div class="title">
+      <h1 class="titleh" style="color: #a36b4f">예약신청</h1><br>
+      <hr style="font-weight: 300; margin-bottom: 30px;">
+      <p style="margin-bottom: 5px;">※ 온라인 예약은 선착순으로 배정됩니다.</p>
+      <p style="margin-bottom: 5px;">※ 제네시스 강남은 전시된 차량을 체험하는 상품 체험과 시승 체험을 운영합니다.</p>
+      <p style="margin-bottom: 5px;">※ 6명 이상의 단체의 경우 반드시 전화(02-556-9870)로 문의하시기 바랍니다.</p>
+      <p>※ 예약일 기준 한 달 전부터 예약이 가능합니다.</p>
+      <hr style="font-weight: 300; margin-top: 30px;">
+    </div>
+
+    <div class="field">
+      <div style="margin-left: 7px; margin-bottom: 5px; color: #a36b4f">대리점 선택</div>
+      <div class="control has-icons-left" style="margin-bottom: 1.5rem; height: 40px;">
+        <div class="select" style=" float : left;">
+          <select style="margin-bottom : 5px;" name="firstnum" id="firstnum" onchange="getTime(event)">
+            <option selected></option>
+            <option>서울 대리점</option>
+            <option>내곡 대리점</option>
+            <option>강남대로 대리점</option>
+            <option>신강남 대리점</option>
+          </select>
+        </div>
+    </div>
+  </div>
+  <div class='ids'>
+    <button type="submit" class="btn btn-primary btn-user btn-block" onclick="button_act();">
+      확   인
+    </button>
+  </div>
+</div>
+  <!-- <script src="js/index.js"></script> -->
+</body>
+</html>
