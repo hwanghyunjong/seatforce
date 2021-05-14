@@ -230,6 +230,13 @@
   input[type="radio"]:checked + span .fake-radiobutton:after,
   input[type="checkbox"]:checked + span .fake-checkbox:after { display: block; }
 
+  .named {
+    margin-left: 7px; 
+    margin-bottom: 5px; 
+    color: #a36b4f;
+    margin-bottom: 7px;
+  }
+
   
 
 

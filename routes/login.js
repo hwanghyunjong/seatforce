@@ -51,13 +51,16 @@ router.get('/',  (req, res) => {
 router.get('/:month/:day',  (req, res) => { 
     var params = req.params;
     console.log(params.day);
+
+    var queryData = url.parse(req.url, true).query;
+    var title = queryData.id;
     try {
         conn.login(
             "hjhwang@sobetec.demo", 
             "thqpWkd12" + "oJSpN8f0mgnM9Z6Jjjoc560D",
             (err, reso) => {
                 console.log('Connected to Salesforce!');
-                conn.query(`SELECT Name, ApplicationDate__c, ApplicationTime__c FROM TestDriveExperience__c Where ApplicationDate__c = 2021-${params.month}-${params.day}`, (err, result) => {
+                conn.query(`SELECT Name, ApplicationDate__c, ApplicationTime__c FROM TestDriveExperience__c Where ApplicationDate__c = 2021-${params.month}-${params.day} AND TestDriveExperienceAgency__c = '${title}'`, (err, result) => {
                     if (err) {
                         return console.error("Failed to run SOQL query: ", err);
                     }
@@ -71,9 +74,14 @@ router.get('/:month/:day',  (req, res) => {
                     };
 
                     console.log(LastName);
+                    if (LastName.length != 0) {
+                        console.log(typeof(records[0].ApplicationTime__c));
+                    }
+                    
                     
                     res.render('../views/login.ejs', {
                         LastName : LastName,
+                        title : title,
                         monthdata : params.month,
                         daydata : params.day
                     });
@@ -91,7 +99,10 @@ router.get('/:month/:day',  (req, res) => {
 
 router.route('/').post(function(req, res) {
 	//console.log(req.body)
-    var paramName = req.body.LastName || req.body.LastName;
+    
+    var paramLastName = req.body.LastName || req.body.LastName;
+    var paramFirstName = req.body.FirstName || req.body.FirstName;
+
 	var paramEmail = req.body.Id || req.query.Id;
     var paramBirth = req.body.birthday || req.query.birthday;
 
@@ -115,11 +126,16 @@ router.route('/').post(function(req, res) {
 
     var gender = req.body.gender;
 
-    var yearmonth = req.body.yearmonthday;
+    var visitor = req.body.visitor;
+
+    var vehicletype = req.body.vehicletype;
+    var vehicle = req.body.vehicle;
 
     var radio = req.body.timevalue;
+    var yearmonthday = req.body.yearmonthday;
+    var title = req.body.place;
     
-    console.log(radio);
+    console.log(vehicle);
 
     var checks = [check1, check2, check3, check4, check5];
 
@@ -132,8 +148,6 @@ router.route('/').post(function(req, res) {
         }
     }
 
-    console.log(array.length);
-
     for (j=0; j<array.length; j++) {
         if (j < array.length-1) {
             aa += `${array[j]};`;
@@ -141,8 +155,9 @@ router.route('/').post(function(req, res) {
             aa += `${array[j]}`;
         }
     }
-
-    console.log(aa);
+    
+    radio += ':00.000Z';
+    console.log(radio);
 
     try {
         conn.login(
@@ -153,25 +168,45 @@ router.route('/').post(function(req, res) {
                 conn.sobject("TestDriveExperience__c")
                     .create(
                     { 
-                        LastName : paramName,
-                        Email : paramEmail,
-                        Birthday__c : paramBirth,
-                        Phone : firstnum + middlenum + lastnum,
-                        Company	 : 'sobetec',
-                        CurrencyIsoCode : 'KRW',
-                        Status : 'Open - Not Contacted',
+                        FirstName__c : paramFirstName,
+                        LastName__c : paramLastName,
+                        Email__c : paramEmail,
+                        DateOfBirth__c : paramBirth,
+                        MobilePhone__c : firstnum + middlenum + lastnum,
+                        ApplicationTime__c	 : radio,
+                        TestDriveExperience__c : vehicletype,
+                        NumberOfVisitors__c : visitor,
                         VehicleModelOfInterest__c : aa,
-                        Gender__c : gender
+                        Gender__c : gender,
+                        TestDriveExperienceAgency__c : title,
+                        Vehicle__c : vehicle,
+                        ApplicationDate__c : yearmonthday
                     }, 
                     function(err, ret) {
-                        if (err || !ret.success) { return console.error(err, ret); 
-                    }
-                    console.log("Created record id : " + ret.id);
+                        if (err /*|| !ret.success*/) { 
+                            console.log("Error");
+                            res.render('../views/failed.html');
+                        //     res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+                        //     res.write('<h2>사용자 추가  실패</h2>');
+                        //     res.write(`<button type="submit" class="btn btn-primary btn-user btn-block" onclick="location.href='../main'">
+                        //     확   인
+                        //   </button>`);
+                        //     res.end(); 
+                        } else {
+                            console.log("Created record id : " + ret.id);
+                            res.render('../views/success.html');
+                        //     res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+                        //     res.write('<h2>사용자 추가 성공</h2>');
+                        //     res.write(`<button type="submit" class="btn btn-primary btn-user btn-block" onclick="location.href='../main'">
+                        //     확   인
+                        //   </button>`);
+                        //     res.end(); 
+                        }
                     // ...
                   });
             });
         // now you can use conn to read/write data...
-        res.redirect('/login');
+        // res.redirect('/main');
     } catch (err) {
         console.error(err);
     }
